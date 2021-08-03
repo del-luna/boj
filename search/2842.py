@@ -1,54 +1,56 @@
-def bfs(x, y):
-    queue = [[x, y]]
-    max_f = 0
-    while queue:
-        a, b = queue[0][0], queue[0][1]
-        del queue[0]
-
-        check = {}
-        c = []
-        for k in range(8):
-            nx = a + dx[k]
-            ny = b + dy[k]
-
-            
-
-            if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 'K':
-                max_f = max(abs(f[a][b] - f[nx][ny]), max_f)
-                print(max_f)
-                graph[nx][ny] = -1
-                queue.append([nx, ny])
-                c = []
-                check = {}
-                break
-
-            if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == '.':
-                c.append(graph[nx][ny])
-                check[f[nx][ny]] = [nx, ny]
-
-        if len(c)>0 and 'K' not in c:
-            max_f = max(abs(f[a][b] - min(check)), max_f)
-            print('error!')
-            print(max_f)
-            nx = check[min(check)][0]
-            ny = check[min(check)][1]
-            graph[nx][ny] = -1
-            queue.append([nx, ny])
-            check={}
-            c=[]
+import sys
+from collections import deque
 
 
-    print(max_f)                
-
-
-dx = [-1,0,1,-1,1,-1,0,1]
-dy = [1,1,1,0,0,-1,-1,-1]
+dx = [1, -1, 0, 0, 1, 1, -1, -1]
+dy = [0, 0, 1, -1, 1, -1, 1, -1]
 
 n = int(input())
 graph = [list(input())for _ in range(n)] 
 f = [list(map(int, input().split())) for _ in range(n)]
+houses = 0
+fatigue = []
 
 for i in range(n):
     for j in range(n):
         if graph[i][j] == 'P':
-           bfs(i, j) 
+           sx, sy = i, j
+        if graph[i][j] == 'K':
+            houses += 1
+
+        fatigue.append(f[i][j])
+
+fatigue = sorted(set(fatigue))
+left, right = 0, 0
+ans = sys.maxsize
+
+while left < len(fatigue):
+    visit = [[False] * n for _ in range(n)]
+    init_tired = f[sx][sy]
+
+    q = deque()
+    K = 0 # num of visited home
+    if fatigue[left] <= init_tired <= fatigue[right]:
+        visit[sx][sy] = True
+        q.append((sx,sy))
+    
+    while q:
+        x, y = q.popleft()
+        for k in range(8):
+            nx, ny = x + dx[k], y + dy[k]
+            if 0 <= nx < n and 0 <= ny < n:
+                if visit[nx][ny] : continue
+                init_tired = f[nx][ny]
+                if fatigue[left]<= init_tired <= fatigue[right]:
+                    visit[nx][ny] = True
+                    q.append((nx,ny))
+                    if graph[nx][ny] == 'K': K+=1
+    
+    if K == houses:
+        ans = min(ans, fatigue[right] - fatigue[left])
+        left+=1
+    elif right + 1< len(fatigue):
+        right += 1
+    else: break
+
+print(ans)
