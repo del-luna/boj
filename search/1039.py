@@ -1,8 +1,6 @@
 from collections import deque
 from itertools import combinations
-import sys, copy
-
-input = sys.stdin.readline
+import copy
 
 def bfs():
     c = set()
@@ -16,7 +14,6 @@ def bfs():
             s = copy.deepcopy(l)
             temp_i, temp_j = s[i], s[j]
             s[i], s[j] = temp_j, temp_i
-            import pdb; pdb.set_trace()
             if s[0] == '0':
                 continue
             nx = int(''.join(s))

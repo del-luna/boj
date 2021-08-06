@@ -6,13 +6,13 @@ while 1:
         print(1)
         break
 
-    cur = pow(1.0 * s/k, k)
+    cur = pow(s/k, k)
     if cur>= p:
         print(k)
         break
 
     elif cur < prev:
-        print(prev)
+        print(-1)
         break
     prev = cur
     k+=1
